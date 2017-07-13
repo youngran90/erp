@@ -3,11 +3,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <link href="/resources/css/stylesheet.css" rel="stylesheet">
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
 <script type="text/javascript">
 
 function gender(num){
@@ -18,32 +20,22 @@ $(function(){
 	
 	$("#register").on("click", function(){
 	
-		window.open("/staff_input_form", "", "width:600px; height:500px;");
+		window.open("/staff_input_form", "", "width:900px; height:300px;");
 		
 	});
 	
 	
-	 $('input[type="checkbox"][name="school_name"]').click(function(){
-	        if ($(this).prop('checked')) {
-	            $('input[type="checkbox"][name="school_name"]').prop('checked', false);
-	            $(this).prop('checked', true);
-	        }
-	    });
-	 
-
-	 $('input[type="checkbox"][name="gender"]').click(function(){
-	        if ($(this).prop('checked')) {
-	            $('input[type="checkbox"][name="gender"]').prop('checked', false);
-	            $(this).prop('checked', true);
-	        }
-	    });
 });
 
+ function search_all(){
+	 alert("검색");
+	 location.href="/staff_all";
+ }
 
 
 
 </script>
-<title>Insert title here</title>
+<title>사원 정보 검색</title>
 </head>
 <body>
 	<form action="" class="erp_table">
@@ -78,10 +70,9 @@ $(function(){
 						<input type="checkbox" name="school_name" id="school_name" value="일반대졸">일반대졸
 					</td>
 					<td>기술</td>
-					<td colspan="3"><input type="checkbox" name="skill"
-						class="skill" value="Java">Java <input type="checkbox"
-						name="skill" class="skill" value="JSP">JSP <input
-						type="checkbox" name="skill" class="skill" value="ASP">ASP
+					<td colspan="3"><input type="checkbox" name="skill" class="skill" value="Java">Java 
+					<input type="checkbox" name="skill" class="skill" value="JSP">JSP 
+					<input type="checkbox" name="skill" class="skill" value="ASP">ASP
 						<input type="checkbox" name="skill" class="skill" value="PHP">PHP
 						<input type="checkbox" name="skill" class="skill" value="Delphi">Delphi
 					</td>
@@ -139,12 +130,12 @@ $(function(){
 	</form>
 			<div id="bt_group" class="bt_group">
 			<input type="button" id="search" value="검색"> 
-			<input	type="button" id="search_all" value="전부검색"> 
+			<input	type="button" id="search_all" onclick="search_all()" value="전부검색"> 
 			<input	type="button" id="reset" value="초기화"> 
 			<input	type="button" id="register" value="등록">
 		</div>
 
-	<c:if test="${list ne null}">
+	<c:if test="${staff_all ne null}">
 		<table>
 			<thead>
 				<tr>
@@ -157,9 +148,26 @@ $(function(){
 				</tr>
 			</thead>
 			<tbody>
+			<c:forEach var="list" items="${staff_all}" varStatus="status">
 				<tr>
-					<td></td>
+					<td>${status.count}</td>
+					<td>${list.staff_name}</td>
+					<td>
+					<c:set var="jumin" value="${list.jumin_no}" ></c:set>
+					<c:set var="gender" value = "${fn:substring(jumin, 7, 8)}" ></c:set>
+					<c:choose>
+					  <c:when test="${gender eq '1'}">남</c:when>
+					  <c:when test="${gender eq '2'}">여</c:when>
+					 <c:otherwise>no</c:otherwise>
+					  </c:choose>
+					</td>
+					<td>${list.religion_name}</td>
+					<td>${list.graduate_day}</td>
+					<td>
+						<button id="updel" name="updel" class="updel" onclick="updel(location.href='/staff_updel_form?staff_no='${list.staff_name}')">수정/삭제</button>
+					</td>
 				</tr>
+				</c:forEach>
 			</tbody>
 		</table>
 	</c:if>

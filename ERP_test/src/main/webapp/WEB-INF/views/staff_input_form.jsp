@@ -1,11 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-	pageEncoding="EUC-KR"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link href="/resources/css/stylesheet.css" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript">
@@ -19,6 +20,15 @@
 		}
 		
 		
+	$(function(){
+		
+		
+		 $('input[type="checkbox"][name="school_code"]').click(function(){
+		        if ($(this).prop('checked')) {
+		            $('input[type="checkbox"][name="school_code"]').prop('checked', false);
+		            $(this).prop('checked', true);
+		        }
+		    });
 		
 		
 		$("#register").on("click", function(){
@@ -26,15 +36,25 @@
 			var staff_name = $("#staff_name").val();
 			
 			var jumin_f = $("#jumin_f").val();
+			var year = jumin_f.substring(0, 2);
+			var month = jumin_f.substring(2, 4);
+			var day = jumin_f.substring(4, 6);
+
+			if(month > 12 || month <1 || day < 1 || day> 31 ){
+		 		alert("ìƒë…„ì›”ì¼ì„ í™•ì¸í•´ì£¼ì„¸ìš”");
+				var jumin_f = $("#jumin_f").focuss();
+
+			}
 			var jumin_b = $("#jumin_b").val();
+			
 			var jumin_no = jumin_f + "-" + jumin_b;
-			
-			var school_name = $("#school_name").val();
-			
+			$("#jumin_no").val(jumin_no);
+		
+			var school_name = $("input[name=school_code]:checked").val();
 		
 			var skill_names =[];
 			
-			$("input[name=skill_name]:checked").each(function(){
+			$("input[name=staff_skill_no]:checked").each(function(){
 				skill_names.push($(this).val());
 			});
 	
@@ -45,125 +65,149 @@
 			var before_graduate_day = before_grade_year +"-" + before_grade_month + "-" + before_grade_day;
 			
 			var after_grade_year =  $("#after_grade_year").val();
-			var after_grade_month =  $("#aftere_grade_month").val();
+			var after_grade_month =  $("#after_grade_month").val();
 			var after_grade_day =  $("#after_grade_day").val();
 			
 			var after_graduate_day = after_grade_year +"-" + after_grade_month + "-" + after_grade_day;
 			
 			if(before_grade_year > after_grade_year ){
-				alert("¼±ÅÃ ³¯Â¥°¡ Æ²·È½À´Ï´Ù.");
+				alert("ì´ì „ ë‚ ì§œê°€ ì´í›„ ë‚ ì§œë³´ë‹¤ í½ë‹ˆë‹¤");
 				$("#before_grade_year").val("");
 				$("#before_grade_month").val("");
 				$("#before_grade_day").val("");
 				$("#after_grade_year").val("");
 				$("#after_grade_month").val("");
 				$("#after_grade_day").val("");
+			}else{
+				$("#graduate_day").val(after_graduate_day);
 			}
-	
-		
-		
-		
+			
+			if(staff_name == ''){
+				alert("ì´ë¦„ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.");
+				$("#staff_name").focus();
+				return;
+			}else if(jumin_f == '' || jumin_b == ''){
+				alert("ì£¼ë¯¼ë²ˆí˜¸ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.");
+				$("#jumin_f").focus();
+				return;
+			}else if($("input:checkbox[name=school_code]:checked").length < 1){
+				alert("í•™ë ¥ì„ ì„ íƒí•´ì£¼ì„¸ìš”.");
+			}else if($("input:checkbox[name=staff_skill_no]:checked").length < 1){
+				alert("ê¸°ìˆ ì„ í•˜ë‚˜ì´ìƒ  ì„ íƒí•´ì£¼ì„¸ìš”.");
+			}else{
+				if (confirm("ì •ë§ ì €ì¥í•˜ì‹œê² ìŠµë‹ˆê¹Œ?") == true){    //í™•ì¸
+				document.getElementById('registerForm').submit();
+				}else{   //ì·¨ì†Œ
+				    return false;
+				}
+			}
+
 		});
-	});
 	
+		
+	});
+
+
 
 </script>
-<title>Insert title here</title>
+<title>ì‚¬ì› ì •ë³´ ë“±ë¡</title>
 </head>
 <body>
-	<form action="" class="erp_table">
+	<form action="insert_staff" id="registerForm" name="registerForm"  method="post">
 		<table>
 			<thead>
 				<tr>
-					<th colspan="6">»ç¿ø Á¤º¸ µî·Ï</th>
+					<th colspan="6">ì‚¬ì› ì •ë³´ ë“±ë¡</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>ÀÌ¸§</td>
-					<td><input type="text" id="staff_name" name="staff_name"></td>
-					<td>ÁÖ¹Î¹øÈ£</td>
+					<td>ì´ë¦„</td>
+					<td><input type="text" id="staff_name" name="staff_name" value="1"></td>
+					<td>ì£¼ë¯¼ë²ˆí˜¸</td>
 					<td>
-					<input type="text" name="jumin_f" id="jumin_f" size="6" maxlength="6" onkeydown="onlyNumber(this)">-
-					<input type="password" id="jumin_b" name="jumin_b" size="12" maxlength="12" onkeydown="onlyNumber(this)">
-					<td>Á¾±³</td>
-					<td><select name="religion_name">
+					<input type="text" name="jumin_f" id="jumin_f" size="6" maxlength="6" onkeydown="onlyNumber(this)" value="1">-
+					<input type="password" id="jumin_b" name="jumin_b" size="7" maxlength="7" onkeydown="onlyNumber(this)" value="1">
+					<td>ì¢…êµ</td>
+					<td><select name="religion_code">
 							<option value=""></option>
-							<option value="±âµ¶±³">±âµ¶±³</option>
-							<option value="ÃµÁÖ±³">ÃµÁÖ±³</option>
-							<option value="ºÒ±³">ºÒ±³</option>
-							<option value="ÀÌ½½¶÷">ÀÌ½½¶÷</option>
-							<option value="¹«±³">¹«±³</option>
+							<option value="1" selected="selected">ê¸°ë…êµ</option>
+							<option value="2">ì²œì£¼êµ</option>
+							<option value="3">ë¶ˆêµ</option>
+							<option value="4">ì´ìŠ¬ëŒ</option>
+							<option value="5">ë¬´êµ</option>
 					</select></td>
 				</tr>
-				<tr>
-					<td>ÇĞ·Â</td>
-					<td><input type="checkbox" name="school_name" id="school_name" value="°íÁ¹">°íÁ¹ 
-						<input type="checkbox" name="school_name" id="school_name" value="Àü¹®´ëÁ¹">Àü¹®´ëÁ¹ 
-						<input type="checkbox" name="school_name" id="school_name" value="ÀÏ¹İ´ëÁ¹">ÀÏ¹İ´ëÁ¹</td>
-					<td>±â¼ú</td>
+				 <tr>
+					<td>í•™ë ¥</td>
+					<td><input type="checkbox" name="school_code" id="school_code" value="1" checked="checked">ê³ ì¡¸ 
+						<input type="checkbox" name="school_code" id="school_code" value="2">ì „ë¬¸ëŒ€ì¡¸ 
+						<input type="checkbox" name="school_code" id="school_code" value="3">ì¼ë°˜ëŒ€ì¡¸</td>
+					<td>ê¸°ìˆ </td>
 					<td colspan="3">
-						<input type="checkbox" name="skill_name" id="skill_name" class="chkclass" value="Java">Java 
-						<input type="checkbox" name="skill_name" id="skill_name" class="chkclass" value="JSP">JSP 
-						<input type="checkbox" name="skill_name" id="skill_name" class="chkclass" value="ASP">ASP
-						<input type="checkbox" name="skill_name" id="skill_name" class="chkclass"  value="PHP">PHP
-						<input type="checkbox" name="skill_name" id="skill_name"  class="chkclass" value="Delphi">Delphi
+						<input type="checkbox" name="staff_skill_no" id="staff_skill_no" class="chkclass" value="Java" checked="checked">Java 
+						<input type="checkbox" name="staff_skill_no" id="staff_skill_no" class="chkclass" value="JSP">JSP 
+						<input type="checkbox" name="staff_skill_no" id="staff_skill_no" class="chkclass" value="ASP">ASP
+						<input type="checkbox" name="staff_skill_no" id="staff_skill_no" class="chkclass"  value="PHP">PHP
+						<input type="checkbox" name="staff_skill_no" id="staff_skill_no"  class="chkclass" value="Delphi">Delphi
 					</td>
 				</tr>
 				<tr>
 				
-					<td>Á¹¾÷ÀÏ</td>
+					<td>ì¡¸ì—…ì¼</td>
 					<td colspan="5">
 					<jsp:useBean id="todayyear" class="java.util.Date"/>
 					<fmt:formatDate value="${todayyear}" pattern="yyyy" var="todayYear"/>
-					<!-- Á¹¾÷ÀÏ Àü -->
+					<!-- ì¡¸ì—…ì¼ ì „ -->
 					<select name="before_grade_year" id="before_grade_year">
 							<option value=""></option>
-							<c:forEach var="ye" begin="1900" end="${todayYear}">
-								<option value="${ye}">${ye}</option>
+							<c:forEach var="y" begin="1900" end="${todayYear}">
+								<option value="${y}">${y}</option>
 							</c:forEach>
-					</select> ³â 
+					</select> ë…„ 
 					<select name="before_grade_month" id="before_grade_month">
 							<option value=""></option>
 							<c:forEach var="m" begin="1" end="12">
 								<option value="${m}">${m}</option>
 							</c:forEach>
-					</select>¿ù
+					</select>ì›”
 					<select name="before_grade_day" id="before_grade_day">
 						<option value=""></option>
 							<c:forEach var="d" begin="1" end="31">
 								<option value="${d}">${d}</option>
 							</c:forEach>
-					</select>ÀÏ ~
-					<!-- Á¹¾÷ÀÏ ÈÄ -->
+					</select>ì¼ ~
+					<!-- ì¡¸ì—…ì¼ í›„ -->
+					
 					<select name="after_grade_year" id="after_grade_year">
 							<option value=""></option>
-							<c:forEach var="ye" begin="1900" end="${todayYear}">
-								<option value="${ye}">${ye}</option>
+							<c:forEach var="y" begin="1900" end="${todayYear}">
+								<option value="${y}">${y}</option>
 							</c:forEach>
-					</select> ³â 
+					</select> ë…„ 
 					<select name="after_grade_month" id="after_grade_month">
 							<option value=""></option>
 							<c:forEach var="m" begin="1" end="12">
 								<option value="${m}">${m}</option>
 							</c:forEach>
-					</select>¿ù
+					</select>ì›”
 					<select name="after_grade_day" id="after_grade_day">
 						<option value=""></option>
 							<c:forEach var="d" begin="1" end="31">
 								<option value="${d}">${d}</option>
 							</c:forEach>
-					</select>ÀÏ
+					</select>ì¼
 					
+					<input type="hidden" id="jumin_no" name="jumin_no" value="">
+					<input type="hidden" id="graduate_day" name="graduate_day" value="">
 					</td>
-				</tr>
+				</tr> 
 			</tbody>
 		</table>
 		<div id="bt_group" class="bt_group">
-			<input	type="button" id="reset" name="reset" value="ÃÊ±âÈ­"> 
-			<input	type="button" id="register" name="register" value="µî·Ï">
+			<input	type="button" id="reset" name="reset" value="ì´ˆê¸°í™”"> 
+			<input	type="submit" id="register" name="register" value="ë“±ë¡">
 		</div>
-		<span></span>
 	</form>
 
 
